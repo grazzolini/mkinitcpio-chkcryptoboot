@@ -1,23 +1,25 @@
 # Maintainer: Giancarlo Razzolini <grazzolini@gmail.com>
 pkgname=mkinitcpio-chkcryptoboot
-pkgver=0.0.1
-pkgrel=1
+pkgver=0.0.2
+pkgrel=2
 pkgdesc="This hook checks for a modified bootloader code, in an encrypted boot setup, and warns the user to not enter his root device password"
 arch=('any')
 url="https://github.com/grazzolini/mkinitcpio-chkcryptoboot"
 license=('BSD')
 install=$pkgname.install
 backup=('etc/default/chkcryptoboot.conf')
-source=('ChangeLog' "$pkgname.install" 'chkcryptoboot.conf' 'chkcryptoboot_hook' 'chkcryptoboot_install')
+source=('ChangeLog' "$pkgname.install" 'chkcryptoboot.conf' 'chkcryptoboot_hook' 'chkcryptoboot_install' 'chkcryptoboot-profilealert.sh')
 changelog='ChangeLog'
-sha256sums=('c1e396ddb409f83b2a3eac19174c9401e1e3266c5a9027fdc94dcdf1f1e969ba'
-            'b1c6efd790836f85ea05664bc671a423a96992bea8f64d527375d765873fa186'
-            'ca1bb4928e5e566273d6c2ba54ddff93f073da6500cb8c0a1b2019e3ce2ce357'
-            'bf5e92c41003cd341c188bbc9e5a8a5761d57003cec4e677ff4ac8975ab2d662'
-            'ad541c53a0230049d3bfc14853eec8fa422de64b8f40e6efd0710d48249ada25')
+sha512sums=('da08ac38b0c176aed8438522a397961b6a14e77556c2426cdfc6f7c4d99ef9bb88d4e8a9d3a24671076e98c39cf742806af1a14a20613b166c006f3261b275df'
+            'dd1ec73389b65f8772d880ca13ea4298a9a8c2d6b8db0201f0385f1495e370b95e4e50bbd654c51f61db8f1aaca6e8958ce55127361263234a95d0a479c99f5b'
+            '9b5cd5a1685354feadb6bc71484a972f4900c92488a627320e89808167888645d20f18ceec49f70414485f28c70bbea4d7bb1fe64639543432a7f646d06f9e1d'
+            'ece3e6161151bc8708683152cc45db730c021ead0fe766d08d863871a5a219697507de7ff8ba89060c0f7ab3afecacfa4d779f906c6429bfbde284c357e6700e'
+            'c495934d3a1e6effc1b8f6e796008b19be9344d4be7d4992c6e9fd4590f58348d673d10489955f654bc867fce3b0244a01cb855db4b995d85b0bb9c17dec1a14'
+            '2ab9591f144c57358443964504e1ba182d413c5599242952c3f630a34b04bb51aa4bfab9301011fe830bbfae0703d8b02e4761c4eac17428b0b0abd6ceece0da')
 
 package() {
   install -Dm644 "$srcdir/chkcryptoboot.conf"	   "$pkgdir/etc/default/chkcryptoboot.conf"
   install -Dm644 "$srcdir/chkcryptoboot_hook"      "$pkgdir/usr/lib/initcpio/hooks/chkcryptoboot"
   install -Dm644 "$srcdir/chkcryptoboot_install"   "$pkgdir/usr/lib/initcpio/install/chkcryptoboot"
+  install -Dm755 "${srcdir}"/chkcryptoboot-profilealert.sh "${pkgdir}"/etc/profile.d/chkcryptoboot-profilealert.sh
 }

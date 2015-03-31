@@ -1,3 +1,8 @@
+2015-03-31 Giancarlo Razzolini <grazzolini@gmail.com>
+
+	* 0.0.2:
+	- Added a profile for checking the kernel cmdline for a bypassed boot partition.
+	
 2015-03-12 Giancarlo Razzolini <grazzolini@gmail.com>
 
 	* 0.0.1 :

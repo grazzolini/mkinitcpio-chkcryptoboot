@@ -80,7 +80,7 @@ run_hook ()
 	    check_efi
 	    efi_check=$?
 	    check_cmdline
-	    if [ $efi_check -ne 0 -o $? -ne 0]; then
+	    if [ $efi_check -ne 0 -o $? -ne 0 ]; then
 		warning_confirm
 	    fi
 	else

@@ -15,8 +15,6 @@ build ()
   # check if TMPDIR exsists if not make it
   [ -d $TMPDIR ] || mkdir -p $TMPDIR
 
-  umask 0400
-
   add_dir /etc/chkcryptoboot
 
   if [ -n "$BOOTMODE" ]; then

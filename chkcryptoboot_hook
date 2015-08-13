@@ -9,9 +9,11 @@ check_mbr ()
 	if [ $? -ne 0 ]; then
 	    echo -e "\nCHKCRYPTOBOOT ALERT!\n"
 	    echo -e "CHANGES HAVE BEEN DETECTED IN THE BOOT LOADER CODE INSTALLED IN YOUR MBR!\n"
+            cd -
 	    return 1
 	else
 	    echo "Your boot loader code mbr hash was verified successfully."
+            cd -
 	    return 0
 	fi
     fi

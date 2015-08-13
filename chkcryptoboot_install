@@ -17,14 +17,14 @@ build ()
 
   add_dir /etc/chkcryptoboot
 
-  if [ -n "$CMDLINE_NAME" -a -n "$CMDLINE_VALUE" ]; then
+  if [ -z $CMDLINE_NAME -o -z $CMDLINE_VALUE ]; then
       error "You must configure the cmdline name/value pair; exit"
       return 1
   fi
 
   if [ -n "$BOOTMODE" ]; then
       if [ $BOOTMODE = "mbr" ]; then
-	  if [ -n "$BOOTDISK" -a -b $BOOTDISK ]; then
+	  if [ -n "$BOOTDISK" -a -b "$BOOTDISK" ]; then
 	      #only backup first 446 bytes of disk
 	      dd if=$BOOTDISK of=$TMPDIR/disk-head bs=446 count=1
 	      cd $TMPDIR

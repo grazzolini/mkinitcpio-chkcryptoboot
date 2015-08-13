@@ -24,7 +24,7 @@ build ()
 
   if [ -n "$BOOTMODE" ]; then
       if [ $BOOTMODE = "mbr" ]; then
-	  if [ -n "$BOOTDISK" ]; then
+	  if [ -n "$BOOTDISK" -a -b $BOOTDISK ]; then
 	      #only backup first 446 bytes of disk
 	      dd if=$BOOTDISK of=$TMPDIR/disk-head bs=446 count=1
 	      cd $TMPDIR

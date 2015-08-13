@@ -32,7 +32,7 @@ build ()
 	      add_file $TMPDIR/disk-head.sha512 /etc/chkcryptoboot
 	  else
 	      echo "No BOOTDISK configured; exit"
-	      return 0
+	      return 1
 	  fi
       elif [ $BOOTMODE = "efi" ]; then
 	  if [ -n "$ESP" ]; then
@@ -40,7 +40,7 @@ build ()
 		  findmnt $ESP --fstab -n --output=source,target,fstype,options,freq,passno > $TMPDIR/fstab
 		  if [ $? != 0 ];then
 		      echo "Your ESP mount point was not found in /etc/fstab; exit"
-		      return 0
+		      return 1
 		  else
 		      add_module `findmnt $ESP --fstab -n --output=fstype`
 		      add_dir `findmnt $ESP --fstab -n --output=target`
@@ -52,19 +52,19 @@ build ()
 		  add_binary /usr/bin/findmnt
 	      else
 		  echo "Wrong EFISTUB configuration; exit"
-		  return 0
+		  return 1
 	      fi
 	  else
 	      echo "No ESP mount point configured; exit"
-	      return 0
+	      return 1
 	  fi
       else
 	  echo "Wrong BOOTMODE configured; exit"
-	  return 0
+	  return 1
       fi
   else
       echo "NO BOOTMODE configured; exit"
-      return 0
+      return 1
   fi
   
   add_binary /usr/bin/sha512sum

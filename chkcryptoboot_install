@@ -4,7 +4,7 @@ build ()
   # Are we even needed?
   if [ ! -s /etc/default/chkcryptoboot.conf ]; then
       echo "There is no chkcryptoboot configuration file; exit"
-      return 0
+      return 1
   else
       source /etc/default/chkcryptoboot.conf
   fi
@@ -16,6 +16,11 @@ build ()
   [ -d $TMPDIR ] || mkdir -p $TMPDIR
 
   add_dir /etc/chkcryptoboot
+
+  if [ -n "$CMDLINE_NAME" -a -n "$CMDLINE_VALUE" ]; then
+      echo "You must configure the cmdline name/value pair; exit"
+      return 1
+  fi
 
   if [ -n "$BOOTMODE" ]; then
       if [ $BOOTMODE = "mbr" ]; then

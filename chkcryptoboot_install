@@ -3,7 +3,7 @@ build ()
 {
   # Are we even needed?
   if [ ! -s /etc/default/chkcryptoboot.conf ]; then
-      echo "There is no chkcryptoboot configuration file; exit"
+      error "There is no chkcryptoboot configuration file; exit"
       return 1
   else
       source /etc/default/chkcryptoboot.conf
@@ -18,7 +18,7 @@ build ()
   add_dir /etc/chkcryptoboot
 
   if [ -n "$CMDLINE_NAME" -a -n "$CMDLINE_VALUE" ]; then
-      echo "You must configure the cmdline name/value pair; exit"
+      error "You must configure the cmdline name/value pair; exit"
       return 1
   fi
 
@@ -31,7 +31,7 @@ build ()
 	      sha512sum disk-head > $TMPDIR/disk-head.sha512
 	      add_file $TMPDIR/disk-head.sha512 /etc/chkcryptoboot
 	  else
-	      echo "No BOOTDISK configured; exit"
+	      error "No BOOTDISK configured; exit"
 	      return 1
 	  fi
       elif [ $BOOTMODE = "efi" ]; then
@@ -39,7 +39,7 @@ build ()
 	      if [ -n "$EFISTUB" -a -s $EFISTUB ]; then
 		  findmnt $ESP --fstab -n --output=source,target,fstype,options,freq,passno > $TMPDIR/fstab
 		  if [ $? != 0 ];then
-		      echo "Your ESP mount point was not found in /etc/fstab; exit"
+		      error "Your ESP mount point was not found in /etc/fstab; exit"
 		      return 1
 		  else
 		      add_module `findmnt $ESP --fstab -n --output=fstype`
@@ -51,19 +51,19 @@ build ()
 		  add_file $TMPDIR/fstab /etc/fstab
 		  add_binary /usr/bin/findmnt
 	      else
-		  echo "Wrong EFISTUB configuration; exit"
+		  error "Wrong EFISTUB configuration; exit"
 		  return 1
 	      fi
 	  else
-	      echo "No ESP mount point configured; exit"
+	      error "No ESP mount point configured; exit"
 	      return 1
 	  fi
       else
-	  echo "Wrong BOOTMODE configured; exit"
+	  error "Wrong BOOTMODE configured; exit"
 	  return 1
       fi
   else
-      echo "NO BOOTMODE configured; exit"
+      error "NO BOOTMODE configured; exit"
       return 1
   fi
   

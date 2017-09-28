@@ -22,6 +22,8 @@ check_mbr ()
 check_efi ()
 {
     if [ -n "$ESP" -a -s /etc/chkcryptoboot/efistub.sha512 ]; then
+	device=`findmnt ${ESP} --fstab -o source -n`
+	resolve_device "${device}"
 	mount $ESP
 	sha512sum -c /etc/chkcryptoboot/efistub.sha512
 	if [ $? -ne 0 ]; then

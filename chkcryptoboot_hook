@@ -3,6 +3,7 @@
 check_mbr ()
 {
     if [ -n "$BOOTDISK" -a -s /etc/chkcryptoboot/disk-head.sha512 ]; then
+	resolve_device "${BOOTDISK}"
 	dd if=$BOOTDISK of=/etc/chkcryptoboot/disk-head bs=446 count=1
 	cd /etc/chkcryptoboot
 	sha512sum -c disk-head.sha512

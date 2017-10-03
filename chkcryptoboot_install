@@ -34,6 +34,17 @@ build ()
 	      error "No BOOTDISK configured; exit"
 	      return 1
 	  fi
+
+	  if [ -n "${CORE}" -a -s ${CORE} ]; then
+	      if [ -z "${PART_TABLE_TYPE}" ]; then
+		  error "In order to hash the core.img, you must specify the partition table type"
+		  return 1
+	      fi
+	      du -b ${CORE} > ${TMPDIR}/core_size
+	      sha512sum ${CORE} > ${TMPDIR}/core.sha512
+	      addfile ${TMPDIR}/core_size /etc/chkcryptoboot
+	      addfile ${TMPDIR}/core.sha512 /etc/chkcryptoboot
+	  fi
       elif [ $BOOTMODE = "efi" ]; then
 	  if [ -n "$ESP" ]; then
 	      if [ -n "$EFISTUB" -a -s $EFISTUB ]; then

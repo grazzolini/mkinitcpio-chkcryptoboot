@@ -20,6 +20,31 @@ check_mbr ()
     fi
 }
 
+check_core_img ()
+{
+    if [ -n "${CORE}" -a -n "${PART_TABLE_TYPE}" -a -s /etc/chkcryptoboot/core.sha512 ]; then
+	resolve_device ${BOOTDISK}
+	if [ ${PART_TABLE_TYPE} == 'mbr' ]; then
+	    dd if=${BOOTDISK} of=/etc/chkcryptoboot/core bs=1 skip=512
+	elif [ ${PART_TABLE_TYPE} == 'gpt' ]; then
+	    # find bios boot partition
+	fi
+	cd /etc/chkcryptoboot
+	sha512sum -c core.sha512
+	if [ $? -ne 0 ]; then
+	    echo -e "\nCHKCRYPTOBOOT ALERT!\n"
+	    echo -e "CHANGES HAVE BEEN DETECTED IN THE BOOT LOADER CORE.IMG!\n"
+            cd -
+	    return 1
+	else
+	    echo "Your boot loader core.img hash was verified successfully."
+            cd -
+	    return 0
+	fi
+	
+    fi
+}
+
 check_efi ()
 {
     if [ -n "$ESP" -a -s /etc/chkcryptoboot/efistub.sha512 ]; then

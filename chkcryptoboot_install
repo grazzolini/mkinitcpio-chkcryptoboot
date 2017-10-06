@@ -30,20 +30,19 @@ build ()
 	      cd $TMPDIR
 	      sha512sum disk-head > $TMPDIR/disk-head.sha512
 	      add_file $TMPDIR/disk-head.sha512 /etc/chkcryptoboot
+
+	      if [ -n "$BOOT_PARTITION" -a -b ${BOOT_PARTITION} ]; then
+		  #read first 62 sectors from BIOS boot partition
+		  dd if=$BOOT_PARTITION of=$TMPDIR/grub-core bs=512 count=62
+	      else
+		  #read first 62 sectors from post-MBR gap
+		  dd if=$BOOTDISK of=$TMPDIR/grub-core skip=1 bs=512 count=62
+	      fi
+	      sha512sum grub-core > $TMPDIR/grub-core.sha512
+	      add_file $TMPDIR/grub-core.sha512 /etc/chkcryptoboot
 	  else
 	      error "No BOOTDISK configured; exit"
 	      return 1
-	  fi
-
-	  if [ -n "${CORE}" -a -s ${CORE} ]; then
-	      if [ -z "${PART_TABLE_TYPE}" ]; then
-		  error "In order to hash the core.img, you must specify the partition table type"
-		  return 1
-	      fi
-	      du -b ${CORE} > ${TMPDIR}/core_size
-	      sha512sum ${CORE} > ${TMPDIR}/core.sha512
-	      addfile ${TMPDIR}/core_size /etc/chkcryptoboot
-	      addfile ${TMPDIR}/core.sha512 /etc/chkcryptoboot
 	  fi
       elif [ $BOOTMODE = "efi" ]; then
 	  if [ -n "$ESP" ]; then

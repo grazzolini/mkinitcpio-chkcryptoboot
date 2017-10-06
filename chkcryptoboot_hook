@@ -3,7 +3,7 @@
 check_mbr ()
 {
     if [ -n "$BOOTDISK" -a -s /etc/chkcryptoboot/disk-head.sha512 ]; then
-	resolve_device "${BOOTDISK}"
+	resolve_device "$BOOTDISK"
 	dd if=$BOOTDISK of=/etc/chkcryptoboot/disk-head bs=446 count=1
 	cd /etc/chkcryptoboot
 	sha512sum -c disk-head.sha512
@@ -20,28 +20,26 @@ check_mbr ()
     fi
 }
 
-check_core_img ()
+check_core ()
 {
-    if [ -n "${CORE}" -a -n "${PART_TABLE_TYPE}" -a -s /etc/chkcryptoboot/core.sha512 ]; then
-	resolve_device ${BOOTDISK}
-	if [ ${PART_TABLE_TYPE} == 'mbr' ]; then
-	    dd if=${BOOTDISK} of=/etc/chkcryptoboot/core bs=1 skip=512
-	elif [ ${PART_TABLE_TYPE} == 'gpt' ]; then
-	    # find bios boot partition
-	fi
+    if [ -n "$BOOTDISK" -a -s /etc/chkcryptoboot/disk-head.sha512 ]; then
+	resolve_device "$BOOTDISK"
+	if [ -n "$BOOT_PARTITION" -a -s /etc/chkcryptoboot/grub-core.sha512 ]; then
+	    dd if=$BOOT_PARTITION of=/etc/chkcryptoboot/grub-core bs=512 count=62
+	else
+	    dd if=$BOOTDISK of=/etc/chkcryptoboot/grub-core skip=1 bs=512 count=62
 	cd /etc/chkcryptoboot
-	sha512sum -c core.sha512
+	sha512sum -c disk-head.sha512
 	if [ $? -ne 0 ]; then
 	    echo -e "\nCHKCRYPTOBOOT ALERT!\n"
-	    echo -e "CHANGES HAVE BEEN DETECTED IN THE BOOT LOADER CORE.IMG!\n"
+	    echo -e "CHANGES HAVE BEEN DETECTED IN THE BOOT LOADER CORE!\n"
             cd -
 	    return 1
 	else
-	    echo "Your boot loader core.img hash was verified successfully."
+	    echo "Your boot loader core hash was verified successfully."
             cd -
 	    return 0
 	fi
-	
     fi
 }
 
@@ -102,8 +100,10 @@ run_hook ()
 	if [ $BOOTMODE = "mbr" ]; then
 	    check_mbr
 	    mbr_check=$?
+	    check_core
+	    core_check=$?
 	    check_cmdline
-	    if [ $mbr_check -ne 0 -o $? -ne 0 ]; then
+	    if [ $mbr_check -ne 0 -o $core_check -ne 0 -o $? -ne 0 ]; then
 		warning_confirm
 	    fi
 	elif [ $BOOTMODE = "efi" ]; then

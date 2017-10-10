@@ -28,6 +28,7 @@ check_core ()
 	    dd if=$BOOT_PARTITION of=/etc/chkcryptoboot/grub-core bs=512 count=62
 	else
 	    dd if=$BOOTDISK of=/etc/chkcryptoboot/grub-core skip=1 bs=512 count=62
+	fi
 	cd /etc/chkcryptoboot
 	sha512sum -c disk-head.sha512
 	if [ $? -ne 0 ]; then

@@ -22,9 +22,9 @@ check_mbr ()
 
 check_core ()
 {
-    if [ -n "$BOOTDISK" -a -s /etc/chkcryptoboot/disk-head.sha512 ]; then
+    if [ -n "$BOOTDISK" -a -s /etc/chkcryptoboot/grub-core.sha512 ]; then
 	resolve_device "$BOOTDISK"
-	if [ -n "$BOOT_PARTITION" -a -s /etc/chkcryptoboot/grub-core.sha512 ]; then
+	if [ -n "$BOOT_PARTITION" ]; then
 	    dd if=$BOOT_PARTITION of=/etc/chkcryptoboot/grub-core bs=512 count=62
 	else
 	    dd if=$BOOTDISK of=/etc/chkcryptoboot/grub-core skip=1 bs=512 count=62

@@ -30,7 +30,7 @@ check_core ()
 	    dd if=$BOOTDISK of=/etc/chkcryptoboot/grub-core skip=1 bs=512 count=62
 	fi
 	cd /etc/chkcryptoboot
-	sha512sum -c disk-head.sha512
+	sha512sum -c grub-core.sha512
 	if [ $? -ne 0 ]; then
 	    echo -e "\nCHKCRYPTOBOOT ALERT!\n"
 	    echo -e "CHANGES HAVE BEEN DETECTED IN THE BOOT LOADER CORE!\n"

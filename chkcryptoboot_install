@@ -36,7 +36,7 @@ build ()
 	  fi
       elif [ $BOOTMODE = "efi" ]; then
 	  if [ -n "$ESP" ]; then
-	      if [ -n "$EFISTUB" -a -s $EFISTUB ]; then
+	      if [ -n "$EFISTUB" -a -s "$EFISTUB" ]; then
 		  findmnt $ESP --fstab -n --output=source,target,fstype,options,freq,passno > $TMPDIR/fstab
 		  if [ $? != 0 ];then
 		      error "Your ESP mount point was not found in /etc/fstab; exit"
@@ -46,7 +46,7 @@ build ()
 		      add_dir `findmnt $ESP --fstab -n --output=target`
 		  fi
 		  #hash grub efistub
-		  sha512sum $EFISTUB > $TMPDIR/efistub.sha512
+		  sha512sum "$EFISTUB" > $TMPDIR/efistub.sha512
 		  add_file $TMPDIR/efistub.sha512 /etc/chkcryptoboot
 		  add_file $TMPDIR/fstab /etc/fstab
 		  add_binary /usr/bin/findmnt

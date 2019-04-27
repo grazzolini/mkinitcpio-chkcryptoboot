@@ -30,6 +30,16 @@ build ()
 	      cd $TMPDIR
 	      sha512sum disk-head > $TMPDIR/disk-head.sha512
 	      add_file $TMPDIR/disk-head.sha512 /etc/chkcryptoboot
+
+	      if [ -n "$BOOT_PARTITION" -a -b ${BOOT_PARTITION} ]; then
+		  #read first 62 sectors from BIOS boot partition
+		  dd if=$BOOT_PARTITION of=$TMPDIR/grub-core bs=512 count=62
+	      else
+		  #read first 62 sectors from post-MBR gap
+		  dd if=$BOOTDISK of=$TMPDIR/grub-core skip=1 bs=512 count=62
+	      fi
+	      sha512sum grub-core > $TMPDIR/grub-core.sha512
+	      add_file $TMPDIR/grub-core.sha512 /etc/chkcryptoboot
 	  else
 	      error "No BOOTDISK configured; exit"
 	      return 1

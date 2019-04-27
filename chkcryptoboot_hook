@@ -3,7 +3,6 @@
 check_mbr ()
 {
     if [ -n "$BOOTDISK" -a -s /etc/chkcryptoboot/disk-head.sha512 ]; then
-	resolve_device "$BOOTDISK"
 	dd if=$BOOTDISK of=/etc/chkcryptoboot/disk-head bs=446 count=1
 	cd /etc/chkcryptoboot
 	sha512sum -c disk-head.sha512
@@ -23,7 +22,6 @@ check_mbr ()
 check_core ()
 {
     if [ -n "$BOOTDISK" -a -s /etc/chkcryptoboot/grub-core.sha512 ]; then
-	resolve_device "$BOOTDISK"
 	if [ -n "$BOOT_PARTITION" ]; then
 	    dd if=$BOOT_PARTITION of=/etc/chkcryptoboot/grub-core bs=512 count=62
 	else
@@ -47,8 +45,7 @@ check_core ()
 check_efi ()
 {
     if [ -n "$ESP" -a -s /etc/chkcryptoboot/efistub.sha512 ]; then
-	device=`findmnt ${ESP} --fstab -o source -n`
-	resolve_device "${device}"
+	resolve_device "$ESP"
 	mount $ESP
 	sha512sum -c /etc/chkcryptoboot/efistub.sha512
 	if [ $? -ne 0 ]; then

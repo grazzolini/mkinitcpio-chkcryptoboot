@@ -19,9 +19,33 @@ check_mbr ()
     fi
 }
 
+check_core ()
+{
+    if [ -n "$BOOTDISK" -a -s /etc/chkcryptoboot/grub-core.sha512 ]; then
+	if [ -n "$BOOT_PARTITION" ]; then
+	    dd if=$BOOT_PARTITION of=/etc/chkcryptoboot/grub-core bs=512 count=62
+	else
+	    dd if=$BOOTDISK of=/etc/chkcryptoboot/grub-core skip=1 bs=512 count=62
+	fi
+	cd /etc/chkcryptoboot
+	sha512sum -c grub-core.sha512
+	if [ $? -ne 0 ]; then
+	    echo -e "\nCHKCRYPTOBOOT ALERT!\n"
+	    echo -e "CHANGES HAVE BEEN DETECTED IN THE BOOT LOADER CORE!\n"
+            cd -
+	    return 1
+	else
+	    echo "Your boot loader core hash was verified successfully."
+            cd -
+	    return 0
+	fi
+    fi
+}
+
 check_efi ()
 {
     if [ -n "$ESP" -a -s /etc/chkcryptoboot/efistub.sha512 ]; then
+	resolve_device "$ESP"
 	mount $ESP
 	sha512sum -c /etc/chkcryptoboot/efistub.sha512
 	if [ $? -ne 0 ]; then
@@ -74,8 +98,10 @@ run_hook ()
 	if [ $BOOTMODE = "mbr" ]; then
 	    check_mbr
 	    mbr_check=$?
+	    check_core
+	    core_check=$?
 	    check_cmdline
-	    if [ $mbr_check -ne 0 -o $? -ne 0 ]; then
+	    if [ $mbr_check -ne 0 -o $core_check -ne 0 -o $? -ne 0 ]; then
 		warning_confirm
 	    fi
 	elif [ $BOOTMODE = "efi" ]; then
